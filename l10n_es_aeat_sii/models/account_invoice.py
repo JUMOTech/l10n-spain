@@ -380,7 +380,8 @@ class AccountInvoice(models.Model):
             "IDVersionSii": SII_VERSION,
             "Titular": {
                 "NombreRazon": self.company_id.name[0:120],
-                "NIF": self.company_id.vat[2:]}
+                "NIF": self.company_id.vat.startswith('ES') and self.company_id.vat[2:] or self.company_id.vat
+}
         }
         if not cancellation:
             header.update({"TipoComunicacion": tipo_comunicacion})
@@ -736,7 +737,7 @@ class AccountInvoice(models.Model):
         inv_dict = {
             "IDFactura": {
                 "IDEmisorFactura": {
-                    "NIF": company.vat[2:],
+                    "NIF": company.vat.startswith('ES') and company.vat[2:] or company.vat,
                 },
                 # On cancelled invoices, number is not filled
                 "NumSerieFacturaEmisor": (
@@ -1285,7 +1286,7 @@ class AccountInvoice(models.Model):
                     "IDOtro": {
                         "CodigoPais": country_code,
                         "IDType": '07',
-                        "ID": vat[2:],
+                        "ID": vat.startswith('ES') and vat[2:] or vat,
                     }
                 }
             else:
@@ -1299,7 +1300,7 @@ class AccountInvoice(models.Model):
                         },
                     }
                 else:
-                    return {"NIF": vat[2:]}
+                    return {"NIF": vat.startswith('ES') and vat[2:] or vat}
         elif gen_type == 2:
             return {
                 "IDOtro": {
@@ -1317,7 +1318,7 @@ class AccountInvoice(models.Model):
                 },
             }
         elif gen_type == 3:
-            return {"NIF": vat[2:]}
+            return {"NIF": vat.startswith('ES') and vat[2:] or vat}
 
     @api.multi
     def _get_sii_exempt_cause(self, applied_taxes):
