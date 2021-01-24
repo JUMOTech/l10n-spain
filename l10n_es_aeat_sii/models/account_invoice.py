@@ -1302,12 +1302,20 @@ class AccountInvoice(models.Model):
                 else:
                     return {"NIF": vat.startswith('ES') and vat[2:] or vat}
         elif gen_type == 2:
-            return {
-                "IDOtro": {
-                    "IDType": '02',
-                    "ID": vat,
+            if country_code == 'ES':
+                return {
+                    "IDOtro": {
+                        "IDType": '02',
+                        "ID": vat,
+                    }
                 }
-            }
+            return {
+                    "IDOtro": {
+                        "CodigoPais": country_code,
+                        "IDType": '02',
+                        "ID": country_code + vat,
+                    }
+                }
         elif gen_type == 3 and country_code != 'ES':
             id_type = '06' if vat == 'NO_DISPONIBLE' else '04'
             return {
